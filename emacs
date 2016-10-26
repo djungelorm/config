@@ -1,35 +1,30 @@
-;;; Emacs configuration file (~/.emacs)
+;;; UI Configuration
 
-;;; Set C mode tab-width
-(setq-default c-basic-offset 2)
+; Start maximised
+(defun toggle-fullscreen ()
+  (interactive)
+  (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
+    '(2 "_NET_WM_STATE_MAXIMIZED_VERT" 0))
+  (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
+    '(2 "_NET_WM_STATE_MAXIMIZED_HORZ" 0))
+)
+(toggle-fullscreen)
 
-;;; Set CC mode identing style and tab-width
-(setq c-default-style "linux" c-basic-offset 2)
+; Disable the toolbar
+(custom-set-variables '(tool-bar-mode nil))
 
-;;; Insert spaces instead of tabs
-(setq-default indent-tabs-mode nil)
+; Disable the splash screen
+(setq inhibit-splash-screen t)
 
-;;; Set tab-width
-(setq-default tab-width 2)
+; Black background, white foreground
+(when window-system
+  (add-to-list 'default-frame-alist '(background-color . "black"))
+  (add-to-list 'default-frame-alist '(foreground-color . "wheat")))
 
-;;; Line wrapping (auto fill) at 80 characters
-(add-hook 'text-mode-hook 'turn-on-auto-fill)
-(setq-default fill-column 80)
 
-;;; Spell check as you type in text mode
-(add-hook 'text-mode-hook 'turn-on-flyspell)
+;;; General editing settings
 
-;;; Auto-update documents views using DocView (e.g. latex output)
-(add-hook 'doc-view-mode-hook 'auto-revert-mode)
-
-;;; Show line and column number in mode line
-(line-number-mode 1)
-(column-number-mode 1)
-
-;;; Highlight current line
-;(global-hl-line-mode 1)
-
-;;; Save temporary and backup files in a different location
+; Save temporary and backup files in a different location to play well with git
 (defvar user-temporary-file-directory
   "~/.emacs-backup/")
 (make-directory user-temporary-file-directory t)
@@ -42,52 +37,69 @@
 (setq auto-save-file-name-transforms
   `((".*" ,user-temporary-file-directory t)))
 
-;;; Python syntax highlighting for scons scripts
-(setq auto-mode-alist
-  (cons '("SConstruct" . python-mode) auto-mode-alist))
-(setq auto-mode-alist
-  (cons '("SConscript" . python-mode) auto-mode-alist))
+; Insert spaces instead of tabs
+(setq-default indent-tabs-mode nil)
 
-;;; Python syntax highlighting for waf scripts
-(setq auto-mode-alist
-  (cons '("wscript" . python-mode) auto-mode-alist))
+; Tab-width
+(setq-default tab-width 2)
 
-;;; Python syntax highlighting for bazel scripts
-(setq auto-mode-alist
-  (cons '("BUILD" . python-mode) auto-mode-alist))
-(setq auto-mode-alist
-  (cons '("*.bzl" . python-mode) auto-mode-alist))
+; Line wrapping (auto fill) at 80 characters
+(add-hook 'text-mode-hook 'turn-on-auto-fill)
+(setq-default fill-column 80)
 
-;;; webppl
-(add-to-list 'auto-mode-alist '("\\.wppl\\'" . js2-mode))
+; Spell check as you type in text mode
+(add-hook 'text-mode-hook 'turn-on-flyspell)
 
-;;; Black background, white foreground
-(when window-system
-  (add-to-list 'default-frame-alist '(background-color . "black"))
-  (add-to-list 'default-frame-alist '(foreground-color . "wheat")))
+; Show line and column number in mode line
+(line-number-mode 1)
+(column-number-mode 1)
 
-;;; Highlight trailing whitespace
+; Highlight trailing whitespace
 (setq-default show-trailing-whitespace t)
 
-;;; Draw tabs with the same color as trailing whitespace
+; Draw tabs with the same color as trailing whitespace
 (add-hook 'font-lock-mode-hook
   (lambda ()
     (font-lock-add-keywords
       nil
       '(("\t" 0 'trailing-whitespace prepend)))))
 
-;;; start maximised
-(defun toggle-fullscreen ()
-  (interactive)
-  (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
-    '(2 "_NET_WM_STATE_MAXIMIZED_VERT" 0))
-  (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
-    '(2 "_NET_WM_STATE_MAXIMIZED_HORZ" 0))
-)
-(toggle-fullscreen)
 
-;;; disable the toolbar
-(custom-set-variables '(tool-bar-mode nil))
+;;; Language Settings
 
-;;; disable the splash screen
-(setq inhibit-splash-screen t)
+; C tab width
+(setq-default c-basic-offset 2)
+
+; C identing style and tab width
+(setq c-default-style "linux" c-basic-offset 2)
+
+; scons scripts
+(setq auto-mode-alist
+  (cons '("SConstruct" . python-mode) auto-mode-alist))
+(setq auto-mode-alist
+  (cons '("SConscript" . python-mode) auto-mode-alist))
+
+; waf scripts
+(setq auto-mode-alist
+  (cons '("wscript" . python-mode) auto-mode-alist))
+
+; bazel scripts
+(setq auto-mode-alist
+  (cons '("BUILD" . python-mode) auto-mode-alist))
+(setq auto-mode-alist
+  (cons '("*.bzl" . python-mode) auto-mode-alist))
+
+; webppl
+(add-to-list 'auto-mode-alist '("\\.wppl\\'" . js2-mode))
+
+; cmake
+(setq auto-mode-alist
+  (append
+    '(("CMakeLists\\.txt\\'" . cmake-mode))
+    '(("\\.cmake\\'" . cmake-mode))
+    auto-mode-alist))
+(load-file "~/local/share/cmake-3.6/editors/emacs/cmake-mode.el")
+
+; nova
+(load-file "~/workspaces/nova/tools/emacs/nova-mode.el")
+(load-file "~/workspaces/nova/tools/emacs/rlang-mode.el")
