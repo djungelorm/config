@@ -43,9 +43,9 @@
 ; Tab-width
 (setq-default tab-width 2)
 
-; Line wrapping (auto fill) at 80 characters
+; Line wrapping (auto fill) at 100 characters
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
-(setq-default fill-column 80)
+(setq-default fill-column 100)
 
 ; Spell check as you type in text mode
 (add-hook 'text-mode-hook 'turn-on-flyspell)
@@ -63,6 +63,12 @@
     (font-lock-add-keywords
       nil
       '(("\t" 0 'trailing-whitespace prepend)))))
+
+; Highlight long lines
+(require 'whitespace)
+(setq whitespace-line-column 100)
+(setq whitespace-style '(face lines-tail))
+(add-hook 'prog-mode-hook 'whitespace-mode)
 
 
 ;;; Language Settings
